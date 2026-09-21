@@ -1,4 +1,6 @@
 <script>
+  let { children } = $props();
+  
   import standardsData from '$lib/data/standards.json';
 
   let selectedStandardId = $state('');
@@ -52,6 +54,8 @@
     isCompleted = false;
   }
 </script>
+
+{@render children()}
 
 <main class="container">
   <h1>OT Cybersecurity Readiness Checker</h1>
