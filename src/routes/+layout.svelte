@@ -134,313 +134,591 @@
 
 {@render children()}
 
-<main class="container">
-  <div class="lang-switch-wrap">
-    <button class="lang-switch" onclick={() => (locale = locale === 'en' ? 'de' : 'en')}>
-      {locale === 'en' ? translations.de.switchLanguage : translations.en.switchLanguage}
-    </button>
-  </div>
+<main class="app-shell">
+  <aside class="sidebar" aria-label="Sidebar navigation">
+    <div class="sidebar-brand">
+      <span class="brand-mark">S</span>
+      <div class="brand-copy">
+        <div class="brand-name">Secure Review</div>
+        <div class="brand-subtitle">Architecture</div>
+      </div>
+    </div>
 
-  <h1>{ui.heading}</h1>
-
-  {#if !selectedStandardId && hasMultipleStandards}
-    <section class="card">
-      <h2>{ui.selectStandardTitle}</h2>
-      <p>{ui.selectStandardPrompt}</p>
-
-      <div class="grid">
+    <div class="sidebar-section">
+      <div class="section-label">Standards</div>
+      <div class="standards-list">
         {#each standardOptions as option}
-          <button class="standard-btn" onclick={() => selectStandard(option.value)}>
-            <h3>{resolveLocalizedValue(option.label, locale)}</h3>
+          <button
+            type="button"
+            class:active={selectedStandardId === option.value}
+            class="sidebar-item"
+            onclick={() => selectStandard(option.value)}
+          >
+            <span class="sidebar-dot" aria-hidden="true"></span>
+            <span>{resolveLocalizedValue(option.label, locale)}</span>
           </button>
         {/each}
       </div>
-    </section>
+    </div>
 
-  {:else if !isCompleted}
-    <section class="card">
-      <div class="header-row">
-        <span>{ui.standardLabel}: <strong>{selectedStandardLabel}</strong></span>
-        <span>{ui.questionLabel} {Math.min(currentQuestionIndex + 1, allQuestions.length)} {ui.ofLabel} {allQuestions.length}</span>
-      </div>
+    <div class="sidebar-footer">
+      <button type="button" class="secondary-nav">About</button>
+      <button type="button" class="secondary-nav">Settings</button>
+      <span class="version">v1.0</span>
+    </div>
+  </aside>
 
-      <div class="progress-bar">
-        <div
-          class="progress"
-          style="width: {allQuestions.length ? ((currentQuestionIndex + 1) / allQuestions.length) * 100 : 0}%"
-        ></div>
-      </div>
+  <div class="main-panel">
+    <header class="main-header">
+      <div class="main-label">Assessment</div>
+      <button class="lang-switch" onclick={() => (locale = locale === 'en' ? 'de' : 'en')}>
+        {locale === 'en' ? 'DE' : 'EN'}
+      </button>
+    </header>
 
-      <h2>{resolveLocalizedValue(currentQuestion?.text, locale)}</h2>
+    {#if !selectedStandardId && hasMultipleStandards}
+      <section class="intro-shell">
+        <p class="kicker">Secure Review</p>
+        <h1>{ui.heading}</h1>
+        <p class="intro-copy">{ui.selectStandardPrompt}</p>
 
-      {#if currentQuestion?.explanation}
-        <div class="question-note">
-          <strong>{locale === 'en' ? 'Why this is asked:' : 'Warum wird das gefragt?'}</strong>
-          <p>{resolveLocalizedValue(currentQuestion.explanation, locale)}</p>
+        <div class="standard-list">
+          {#each standardOptions as option}
+            <button class="standard-row" type="button" onclick={() => selectStandard(option.value)}>
+              <span class="row-label">Standard</span>
+              <span class="row-title">{resolveLocalizedValue(option.label, locale)}</span>
+            </button>
+          {/each}
         </div>
-      {/if}
+      </section>
 
-      <div class="options">
-        {#each currentQuestion?.options ?? [] as option}
-          <button class="option-btn" onclick={() => handleAnswer(option.value)}>
-            {resolveLocalizedValue(option.label, locale)}
-          </button>
-        {/each}
-      </div>
-
-      <button class="back-link" onclick={reset}>{ui.changeStandard}</button>
-    </section>
-
-  {:else}
-    <section class="card result">
-      <h2>{ui.evaluation}: {selectedStandardLabel}</h2>
-
-      <div class="score-grid">
-        <div class="score-box">
-          <span class="score-label">{ui.compliance}</span>
-          <div class="score-badge">{calculateComplianceScore()}%</div>
+    {:else if !isCompleted}
+      <section class="question-shell">
+        <div class="context-row">
+          <span>{ui.questionLabel} {Math.min(currentQuestionIndex + 1, allQuestions.length)} / {allQuestions.length}</span>
+          <span>{selectedStandardLabel}</span>
         </div>
-        <div class="score-box">
-          <span class="score-label">{ui.uncertainty}</span>
-          <div class="score-badge uncertainty">{calculateUncertaintyScore()}%</div>
+
+        <div class="progress-line" aria-hidden="true">
+          <span style="width: {allQuestions.length ? ((currentQuestionIndex + 1) / allQuestions.length) * 100 : 0}%"></span>
         </div>
-      </div>
 
-      {#if calculateComplianceScore() >= 80}
-        <p class="status high"><strong>{ui.stateOfTheArt}</strong> {ui.stateOfTheArtText}</p>
-      {:else if calculateComplianceScore() >= 50}
-        <p class="status medium"><strong>{ui.goodStart}</strong> {ui.goodStartText}</p>
-      {:else}
-        <p class="status low"><strong>{ui.actionNeeded}</strong> {ui.actionNeededText}</p>
-      {/if}
+        <h2>{resolveLocalizedValue(currentQuestion?.text, locale)}</h2>
 
-      <p class="privacy-note">{ui.privacy}</p>
+        {#if currentQuestion?.explanation}
+          <div class="explanation">
+            <div class="explanation-label">{locale === 'en' ? 'Why this is asked?' : 'Warum wird das gefragt?'}</div>
+            <p>{resolveLocalizedValue(currentQuestion.explanation, locale)}</p>
+          </div>
+        {/if}
 
-      <button class="reset-btn" onclick={reset}>{ui.restart}</button>
-    </section>
-  {/if}
+        <div class="answer-list">
+          {#each currentQuestion?.options ?? [] as option}
+            <button
+              class:selected={answers[currentQuestion.id] === option.value}
+              class="answer-option"
+              type="button"
+              onclick={() => handleAnswer(option.value)}
+            >
+              <span class="radio-mark" aria-hidden="true"></span>
+              <span>{resolveLocalizedValue(option.label, locale)}</span>
+            </button>
+          {/each}
+        </div>
+
+        <button class="secondary-link" type="button" onclick={reset}>{ui.changeStandard}</button>
+      </section>
+
+    {:else}
+      <section class="result-shell">
+        <p class="kicker">Assessment complete</p>
+        <h2>{ui.evaluation}</h2>
+
+        <div class="score-row">
+          <div class="score-item">
+            <span>{ui.compliance}</span>
+            <strong>{calculateComplianceScore()}%</strong>
+          </div>
+          <div class="score-item">
+            <span>{ui.uncertainty}</span>
+            <strong>{calculateUncertaintyScore()}%</strong>
+          </div>
+        </div>
+
+        {#if calculateComplianceScore() >= 80}
+          <p class="result-summary"><strong>{ui.stateOfTheArt}</strong> {ui.stateOfTheArtText}</p>
+        {:else if calculateComplianceScore() >= 50}
+          <p class="result-summary"><strong>{ui.goodStart}</strong> {ui.goodStartText}</p>
+        {:else}
+          <p class="result-summary"><strong>{ui.actionNeeded}</strong> {ui.actionNeededText}</p>
+        {/if}
+
+        <p class="privacy-note">{ui.privacy}</p>
+
+        <button class="primary-link" type="button" onclick={reset}>{ui.restart}</button>
+      </section>
+    {/if}
+  </div>
 </main>
 
 <style>
   :global(body) {
-    font-family: system-ui, -apple-system, sans-serif;
-    background-color: #f4f6f8;
-    color: #1a1a1a;
     margin: 0;
-    padding: 20px;
+    min-height: 100vh;
+    background: #050505;
+    color: #f2f2f2;
+    font-family: Inter, 'Segoe UI', sans-serif;
   }
 
-  .container {
-    max-width: 700px;
-    margin: 0 auto;
+  * {
+    box-sizing: border-box;
   }
 
-  .lang-switch-wrap {
+  button {
+    font: inherit;
+  }
+
+  .app-shell {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    min-height: 100vh;
+    background: #050505;
+  }
+
+  .sidebar {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 12px;
+    flex-direction: column;
+    padding: 20px 16px 18px;
+    background: #0b0b0b;
+    border-right: 1px solid #1f1f1f;
   }
 
-  .lang-switch {
-    border: 1px solid #cbd5e1;
-    border-radius: 999px;
-    background: white;
-    padding: 6px 12px;
-    cursor: pointer;
-    color: #0f172a;
+  .sidebar-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 6px 18px;
+    border-bottom: 1px solid #1d1d1d;
+  }
+
+  .brand-mark {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f2f2f2;
+    color: #050505;
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+
+  .brand-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    line-height: 1.1;
+  }
+
+  .brand-name {
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    color: #f2f2f2;
     font-weight: 600;
   }
 
-  h1 {
-    text-align: center;
-    color: #0f172a;
+  .brand-subtitle {
+    font-size: 0.7rem;
+    color: #8a8a8a;
   }
 
-  .card {
-    background: white;
-    padding: 24px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  .sidebar-section {
+    padding-top: 18px;
   }
 
-  .grid {
+  .section-label {
+    margin: 0 8px 10px;
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7a7a7a;
+  }
+
+  .standards-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 4px;
   }
 
-  .standard-btn {
-    text-align: left;
-    padding: 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    background: #f8fafc;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .standard-btn:hover {
-    border-color: #0284c7;
-    background: #f0f9ff;
-  }
-
-  .standard-btn h3 {
-    margin: 0 0 6px 0;
-    color: #0284c7;
-  }
-
-  .header-row {
+  .sidebar-item {
+    width: 100%;
     display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: #64748b;
-    margin-bottom: 8px;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #d9d9d9;
+    padding: 8px 10px;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    font-size: 0.82rem;
   }
 
-  .progress-bar {
-    height: 6px;
-    background: #e2e8f0;
-    border-radius: 3px;
-    margin-bottom: 24px;
+  .sidebar-item:hover,
+  .sidebar-item.active {
+    background: #111111;
+    border-color: #1f1f1f;
+  }
+
+  .sidebar-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #d8ff3e;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+
+  .sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 18px;
+    border-top: 1px solid #1d1d1d;
+  }
+
+  .secondary-nav {
+    background: transparent;
+    border: none;
+    color: #8d8d8d;
+    text-align: left;
+    padding: 0;
+    cursor: pointer;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+  }
+
+  .version {
+    margin-top: 4px;
+    color: #565656;
+    font-size: 0.7rem;
+  }
+
+  .main-panel {
+    padding: 22px 32px 40px;
+  }
+
+  .main-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #1d1d1d;
+  }
+
+  .main-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #8a8a8a;
+  }
+
+  .lang-switch {
+    background: transparent;
+    border: 1px solid #232323;
+    color: #ececec;
+    padding: 7px 10px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .intro-shell,
+  .question-shell,
+  .result-shell {
+    max-width: 760px;
+    padding-top: 36px;
+  }
+
+  .kicker {
+    margin: 0 0 10px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #7a7a7a;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.8rem, 4vw, 4.2rem);
+    line-height: 0.98;
+    letter-spacing: -0.06em;
+    font-weight: 700;
+    color: #f2f2f2;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: clamp(1.45rem, 2vw, 2rem);
+    line-height: 1.18;
+    letter-spacing: -0.04em;
+    font-weight: 600;
+    color: #f2f2f2;
+  }
+
+  .intro-copy {
+    margin: 18px 0 28px;
+    max-width: 620px;
+    color: #b2b2b2;
+    font-size: 1rem;
+    line-height: 1.7;
+  }
+
+  .standard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 720px;
+  }
+
+  .standard-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 0;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid #1d1d1d;
+    color: #f2f2f2;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  .standard-row:last-child {
+    border-bottom: 1px solid #1d1d1d;
+  }
+
+  .standard-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .row-label {
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #7d7d7d;
+  }
+
+  .row-title {
+    font-size: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .context-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #7d7d7d;
+  }
+
+  .progress-line {
+    width: 100%;
+    height: 1px;
+    background: #1d1d1d;
+    margin-bottom: 30px;
     overflow: hidden;
   }
 
-  .progress {
+  .progress-line span {
+    display: block;
     height: 100%;
-    background: #0284c7;
-    transition: width 0.3s ease;
+    background: #f2f2f2;
+    transition: width 0.2s ease;
   }
 
-  .options {
+  .question-shell h2 {
+    margin-top: 0;
+  }
+
+  .explanation {
+    margin-top: 22px;
+    max-width: 620px;
+  }
+
+  .explanation-label {
+    margin-bottom: 8px;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7d7d7d;
+  }
+
+  .explanation p {
+    margin: 0;
+    color: #b3b3b3;
+    font-size: 0.98rem;
+    line-height: 1.75;
+  }
+
+  .answer-list {
+    margin-top: 32px;
+    border-top: 1px solid #1d1d1d;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin: 20px 0;
   }
 
-  .question-note {
-    margin: 14px 0 0;
-    padding: 12px 14px;
-    border-left: 4px solid #0284c7;
-    background: #f0f9ff;
-    border-radius: 8px;
-  }
-
-  .question-note strong {
-    display: block;
-    margin-bottom: 6px;
-    color: #0f172a;
-  }
-
-  .question-note p {
-    margin: 0;
-    color: #334155;
-    line-height: 1.5;
-  }
-
-  .option-btn {
-    padding: 12px 16px;
-    border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    background: white;
+  .answer-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 16px 0;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #1d1d1d;
+    color: #f2f2f2;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
     font-size: 1rem;
+  }
+
+  .answer-option:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .answer-option.selected {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .radio-mark {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #8a8a8a;
+    background: transparent;
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+
+  .answer-option.selected .radio-mark {
+    border-color: #f2f2f2;
+    background: #f2f2f2;
+    box-shadow: inset 0 0 0 3px #050505;
+  }
+
+  .secondary-link,
+  .primary-link {
+    margin-top: 20px;
+    border: none;
+    background: transparent;
+    color: #b1b1b1;
+    padding: 0;
     cursor: pointer;
     text-align: left;
+    font-size: 0.9rem;
   }
 
-  .option-btn:hover {
-    background: #0284c7;
-    color: white;
-    border-color: #0284c7;
+  .result-shell {
+    padding-top: 34px;
   }
 
-  .back-link {
-    background: none;
-    border: none;
-    color: #64748b;
-    cursor: pointer;
-    font-size: 0.85rem;
-    padding: 0;
-  }
-
-  .score-grid {
+  .score-row {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 16px;
-    margin: 24px 0;
+    gap: 26px;
+    margin: 26px 0 20px;
+    border-top: 1px solid #1d1d1d;
+    padding-top: 18px;
   }
 
-  .score-box {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 16px;
-    text-align: center;
+  .score-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  .score-label {
-    display: block;
-    font-size: 0.8rem;
-    color: #64748b;
-    margin-bottom: 8px;
+  .score-item span {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #7d7d7d;
   }
 
-  .score-badge {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #0f172a;
+  .score-item strong {
+    font-size: clamp(2.4rem, 3vw, 3.2rem);
+    line-height: 1;
+    letter-spacing: -0.06em;
+    font-weight: 700;
+    color: #f2f2f2;
   }
 
-  .score-badge.uncertainty {
-    color: #b45309;
-  }
-
-  .status {
-    margin-top: 18px;
-    padding: 12px 14px;
-    border-radius: 8px;
-    border-left: 4px solid;
-  }
-
-  .status.high {
-    background: #ecfdf5;
-    border-color: #16a34a;
-    color: #166534;
-  }
-
-  .status.medium {
-    background: #fff7ed;
-    border-color: #f59e0b;
-    color: #9a5d00;
-  }
-
-  .status.low {
-    background: #fef2f2;
-    border-color: #ef4444;
-    color: #991b1b;
+  .result-summary {
+    margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid #1d1d1d;
+    color: #d2d2d2;
+    line-height: 1.7;
   }
 
   .privacy-note {
-    font-size: 0.85rem;
-    color: #64748b;
-    text-align: center;
     margin-top: 20px;
+    color: #7d7d7d;
+    line-height: 1.7;
   }
 
-  .reset-btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    background: #0f172a;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 16px;
+  @media (max-width: 900px) {
+    .app-shell {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      border-right: none;
+      border-bottom: 1px solid #1d1d1d;
+      padding-bottom: 14px;
+    }
   }
 
-  .reset-btn:hover {
-    background: #1e293b;
+  @media (max-width: 640px) {
+    .main-panel {
+      padding: 18px 18px 30px;
+    }
+
+    .main-header {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .context-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .score-row {
+      grid-template-columns: 1fr;
+    }
+
+    .standard-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
   }
 </style>
