@@ -173,6 +173,13 @@
 
       <h2>{resolveLocalizedValue(currentQuestion?.text, locale)}</h2>
 
+      {#if currentQuestion?.explanation}
+        <div class="question-note">
+          <strong>{locale === 'en' ? 'Why this is asked:' : 'Warum wird das gefragt?'}</strong>
+          <p>{resolveLocalizedValue(currentQuestion.explanation, locale)}</p>
+        </div>
+      {/if}
+
       <div class="options">
         {#each currentQuestion?.options ?? [] as option}
           <button class="option-btn" onclick={() => handleAnswer(option.value)}>
@@ -309,6 +316,26 @@
     flex-direction: column;
     gap: 10px;
     margin: 20px 0;
+  }
+
+  .question-note {
+    margin: 14px 0 0;
+    padding: 12px 14px;
+    border-left: 4px solid #0284c7;
+    background: #f0f9ff;
+    border-radius: 8px;
+  }
+
+  .question-note strong {
+    display: block;
+    margin-bottom: 6px;
+    color: #0f172a;
+  }
+
+  .question-note p {
+    margin: 0;
+    color: #334155;
+    line-height: 1.5;
   }
 
   .option-btn {
