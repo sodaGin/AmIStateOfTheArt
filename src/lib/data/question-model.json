@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "scoring": {
+    "yes": 100,
+    "no": 0,
+    "unknown": 50
+  },
+  "standardSelection": {
+    "id": "selected_standard",
+    "type": "single_choice",
+    "text": "Für welchen Standard möchten Sie den Check durchführen?",
+    "required": true,
+    "options": [
+      {
+        "value": "whitepaper_secure_control_and_telecom",
+        "label": "Whitepaper Anforderungen an sichere Steuerungs- und Telekommunikationssysteme"
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "project_type",
+      "type": "single_choice",
+      "text": "Ist die Anlage eine Bestandsanlage oder eine neue Anlage / Greenfield?",
+      "required": true,
+      "weight": 0,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "existing", "label": "Bestandsanlage", "score": 0 },
+        { "value": "greenfield", "label": "Neue Anlage / Greenfield", "score": 0 }
+      ]
+    },
+    {
+      "id": "security_in_design",
+      "type": "yes_no_unknown",
+      "text": "Wurde Security von Beginn an in das Design der Anlage integriert?",
+      "required": true,
+      "weight": 5,
+      "relevance": {
+        "questionId": "project_type",
+        "operator": "==",
+        "value": "greenfield"
+      },
+      "options": [
+        { "value": "yes", "label": "Ja", "score": 100 },
+        { "value": "no", "label": "Nein", "score": 0 },
+        { "value": "unknown", "label": "Ich weiß es nicht", "score": 0 }
+      ]
+    },
+    {
+      "id": "asset_inventory",
+      "type": "yes_no_unknown",
+      "text": "Gibt es ein aktuelles und vollständiges Asset-Inventar der OT-Umgebung?",
+      "required": true,
+      "weight": 5,
+      "relevance": {
+        "questionId": "project_type",
+        "operator": "==",
+        "value": "existing"
+      },
+      "options": [
+        { "value": "yes", "label": "Ja", "score": 100 },
+        { "value": "no", "label": "Nein", "score": 0 },
+        { "value": "unknown", "label": "Ich weiß es nicht", "score": 0 }
+      ]
+    },
+    {
+      "id": "segmentation",
+      "type": "yes_no_unknown",
+      "text": "Ist die Anlage nach dem Prinzip der Netzwerksegmentierung und Sicherheitszonen aufgebaut?",
+      "required": true,
+      "weight": 4,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": "Ja", "score": 100 },
+        { "value": "no", "label": "Nein", "score": 0 },
+        { "value": "unknown", "label": "Ich weiß es nicht", "score": 0 }
+      ]
+    },
+    {
+      "id": "remote_access_control",
+      "type": "yes_no_unknown",
+      "text": "Werden Fernzugriffe kontrolliert, dokumentiert und nur mit geeigneten Sicherheitsmaßnahmen zugelassen?",
+      "required": true,
+      "weight": 3,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": "Ja", "score": 100 },
+        { "value": "no", "label": "Nein", "score": 0 },
+        { "value": "unknown", "label": "Ich weiß es nicht", "score": 0 }
+      ]
+    }
+  ]
+}

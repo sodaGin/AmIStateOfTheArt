@@ -1,26 +1,48 @@
 <script>
   let { children } = $props();
-  
-  import standardsData from '$lib/data/standards.json';
 
-  let selectedStandardId = $state('');
+  import questionModel from '$lib/data/question-model.json';
+
+  const standardOptions = questionModel.standardSelection?.options ?? [];
+  const hasMultipleStandards = standardOptions.length > 1;
+
+  let selectedStandardId = $state(
+    standardOptions.length === 1 ? standardOptions[0].value : ''
+  );
   let currentQuestionIndex = $state(0);
-  
-  /** @type {Record<string, number>} */
+  /** @type {Record<string, string>} */
   let answers = $state({});
   let isCompleted = $state(false);
 
-  let selectedStandard = $derived(
-    standardsData.standards.find(s => s.id === selectedStandardId)
-  );
+  /**
+   * @param {any} question
+   * @param {Record<string, string>} answerMap
+   */
+  function isQuestionRelevant(question, answerMap) {
+    const relevance = question.relevance;
+
+    if (!relevance || relevance.always === true) return true;
+
+    const answer = answerMap[relevance.questionId];
+
+    if (relevance.operator === '==') {
+      return answer === relevance.value;
+    }
+
+    if (relevance.operator === '!=') {
+      return answer !== relevance.value;
+    }
+
+    return true;
+  }
 
   let allQuestions = $derived(
-    selectedStandard ? selectedStandard.categories.flatMap(c => c.questions) : []
+    (questionModel.questions ?? []).filter((question) => isQuestionRelevant(question, answers))
   );
 
-  let currentQuestion = $derived(allQuestions[currentQuestionIndex]);
+  let currentQuestion = $derived(allQuestions[currentQuestionIndex] ?? null);
 
-/** @param {string} id */
+  /** @param {string} id */
   function selectStandard(id) {
     selectedStandardId = id;
     currentQuestionIndex = 0;
@@ -28,31 +50,80 @@
     isCompleted = false;
   }
 
-/** @param {number} score */
-  function handleAnswer(score) {
+  /** @param {string} optionValue */
+  function handleAnswer(optionValue) {
     if (!currentQuestion) return;
-    answers[currentQuestion.id] = score;
+
+    const selectedOption = currentQuestion.options.find((option) => option.value === optionValue);
+    if (!selectedOption) return;
+
+    answers[currentQuestion.id] = optionValue;
 
     if (currentQuestionIndex < allQuestions.length - 1) {
-      currentQuestionIndex++;
+      currentQuestionIndex += 1;
     } else {
       isCompleted = true;
     }
   }
 
-  function calculateScore() {
-    const scores = Object.values(answers);
-    if (scores.length === 0) return 0;
-    const total = scores.reduce((acc, curr) => acc + curr, 0);
-    return Math.round(total / scores.length);
+  function getWeightedQuestions() {
+    return allQuestions.filter((question) => Number(question.weight ?? 0) > 0);
+  }
+
+  function calculateComplianceScore() {
+    const weightedQuestions = getWeightedQuestions();
+    const totalWeight = weightedQuestions.reduce(
+      (sum, question) => sum + Number(question.weight ?? 0),
+      0
+    );
+
+    if (totalWeight === 0) return 0;
+
+    const weightedCompliance = weightedQuestions.reduce((sum, question) => {
+      const selectedAnswer = answers[question.id];
+      if (selectedAnswer === undefined) return sum;
+
+      const chosenOption = question.options.find((option) => option.value === selectedAnswer);
+      const questionScore = Number(chosenOption?.score ?? 0);
+      const questionWeight = Number(question.weight ?? 0);
+
+      return sum + (questionScore / 100) * questionWeight;
+    }, 0);
+
+    return Math.round((weightedCompliance / totalWeight) * 100);
+  }
+
+  function calculateUncertaintyScore() {
+    const weightedQuestions = getWeightedQuestions();
+    const totalWeight = weightedQuestions.reduce(
+      (sum, question) => sum + Number(question.weight ?? 0),
+      0
+    );
+
+    if (totalWeight === 0) return 0;
+
+    const unknownWeight = weightedQuestions.reduce((sum, question) => {
+      const selectedAnswer = answers[question.id];
+      if (selectedAnswer === 'unknown') {
+        return sum + Number(question.weight ?? 0);
+      }
+      return sum;
+    }, 0);
+
+    return Math.round((unknownWeight / totalWeight) * 100);
   }
 
   function reset() {
-    selectedStandardId = '';
+    selectedStandardId = hasMultipleStandards ? '' : (standardOptions[0]?.value ?? '');
     currentQuestionIndex = 0;
     answers = {};
     isCompleted = false;
   }
+
+  /** @type {string} */
+  let selectedStandardLabel = $derived(
+    standardOptions.find((option) => option.value === selectedStandardId)?.label ?? 'Standard'
+  );
 </script>
 
 {@render children()}
@@ -60,16 +131,15 @@
 <main class="container">
   <h1>OT Cybersecurity Readiness Checker</h1>
 
-  {#if !selectedStandardId}
+  {#if !selectedStandardId && hasMultipleStandards}
     <section class="card">
-      <h2>1. Standard / Framework auswählen</h2>
+      <h2>1. Standard auswählen</h2>
       <p>Wähle den Standard aus, gegen den du deine OT-Sicherheit prüfen möchtest:</p>
 
       <div class="grid">
-        {#each standardsData.standards as std}
-          <button class="standard-btn" onclick={() => selectStandard(std.id)}>
-            <h3>{std.title}</h3>
-            <p>{std.description}</p>
+        {#each standardOptions as option}
+          <button class="standard-btn" onclick={() => selectStandard(option.value)}>
+            <h3>{option.label}</h3>
           </button>
         {/each}
       </div>
@@ -78,22 +148,22 @@
   {:else if !isCompleted}
     <section class="card">
       <div class="header-row">
-        <span>Standard: <strong>{selectedStandard?.title}</strong></span>
-        <span>Frage {currentQuestionIndex + 1} von {allQuestions.length}</span>
+        <span>Standard: <strong>{selectedStandardLabel}</strong></span>
+        <span>Frage {Math.min(currentQuestionIndex + 1, allQuestions.length)} von {allQuestions.length}</span>
       </div>
 
       <div class="progress-bar">
         <div
           class="progress"
-          style="width: {((currentQuestionIndex + 1) / allQuestions.length) * 100}%"
+          style="width: {allQuestions.length ? ((currentQuestionIndex + 1) / allQuestions.length) * 100 : 0}%"
         ></div>
       </div>
 
       <h2>{currentQuestion?.text}</h2>
 
       <div class="options">
-        {#each currentQuestion?.options || [] as option}
-          <button class="option-btn" onclick={() => handleAnswer(option.score)}>
+        {#each currentQuestion?.options ?? [] as option}
+          <button class="option-btn" onclick={() => handleAnswer(option.value)}>
             {option.label}
           </button>
         {/each}
@@ -104,15 +174,23 @@
 
   {:else}
     <section class="card result">
-      <h2>Auswertung: {selectedStandard?.title}</h2>
-      <div class="score-badge">
-        Score: {calculateScore()} / 100
+      <h2>Auswertung: {selectedStandardLabel}</h2>
+
+      <div class="score-grid">
+        <div class="score-box">
+          <span class="score-label">Compliance Score</span>
+          <div class="score-badge">{calculateComplianceScore()}%</div>
+        </div>
+        <div class="score-box">
+          <span class="score-label">Unsicherheits Score</span>
+          <div class="score-badge uncertainty">{calculateUncertaintyScore()}%</div>
+        </div>
       </div>
 
-      {#if calculateScore() >= 80}
+      {#if calculateComplianceScore() >= 80}
         <p class="status high"><strong>State of the Art:</strong> Deine OT-Security ist hervorragend aufgestellt!</p>
-      {:else if calculateScore() >= 50}
-        <p class="status medium"><strong>Guter Anfang:</strong> Es gibt noch wichtige Lücken im Bereich Patch-Management, Segmentierung oder Governance.</p>
+      {:else if calculateComplianceScore() >= 50}
+        <p class="status medium"><strong>Guter Anfang:</strong> Es gibt noch wichtige Lücken in der Sicherheitsarchitektur oder im operativen Management.</p>
       {:else}
         <p class="status low"><strong>Handlungsbedarf:</strong> Wesentliche Sicherheitsanforderungen sind nicht erfüllt.</p>
       {/if}
@@ -176,12 +254,6 @@
     color: #0284c7;
   }
 
-  .standard-btn p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: #64748b;
-  }
-
   .header-row {
     display: flex;
     justify-content: space-between;
@@ -236,12 +308,36 @@
     padding: 0;
   }
 
-  .score-badge {
-    font-size: 2.5rem;
-    font-weight: bold;
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  .score-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 16px;
     text-align: center;
-    margin: 20px 0;
+  }
+
+  .score-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-bottom: 8px;
+  }
+
+  .score-badge {
+    font-size: 2rem;
+    font-weight: bold;
     color: #0f172a;
+  }
+
+  .score-badge.uncertainty {
+    color: #b45309;
   }
 
   .privacy-note {
