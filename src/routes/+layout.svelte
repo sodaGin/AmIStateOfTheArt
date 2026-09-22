@@ -2,9 +2,14 @@
   let { children } = $props();
 
   import questionModel from '$lib/data/question-model.json';
+  import { defaultLocale, resolveLocalizedValue, translations } from '$lib/i18n/index.js';
 
   const standardOptions = questionModel.standardSelection?.options ?? [];
   const hasMultipleStandards = standardOptions.length > 1;
+
+  /** @type {'en' | 'de'} */
+  let locale = $state(defaultLocale);
+  const ui = $derived(translations[locale]);
 
   let selectedStandardId = $state(
     standardOptions.length === 1 ? standardOptions[0].value : ''
@@ -24,11 +29,9 @@
     if (!relevance || relevance.always === true) return true;
 
     const answer = answerMap[relevance.questionId];
-
     if (relevance.operator === '==') {
       return answer === relevance.value;
     }
-
     if (relevance.operator === '!=') {
       return answer !== relevance.value;
     }
@@ -122,24 +125,33 @@
 
   /** @type {string} */
   let selectedStandardLabel = $derived(
-    standardOptions.find((option) => option.value === selectedStandardId)?.label ?? 'Standard'
+    resolveLocalizedValue(
+      standardOptions.find((option) => option.value === selectedStandardId)?.label ?? 'Standard',
+      locale
+    )
   );
 </script>
 
 {@render children()}
 
 <main class="container">
-  <h1>OT Cybersecurity Readiness Checker</h1>
+  <div class="lang-switch-wrap">
+    <button class="lang-switch" onclick={() => (locale = locale === 'en' ? 'de' : 'en')}>
+      {locale === 'en' ? translations.de.switchLanguage : translations.en.switchLanguage}
+    </button>
+  </div>
+
+  <h1>{ui.heading}</h1>
 
   {#if !selectedStandardId && hasMultipleStandards}
     <section class="card">
-      <h2>1. Standard auswählen</h2>
-      <p>Wähle den Standard aus, gegen den du deine OT-Sicherheit prüfen möchtest:</p>
+      <h2>{ui.selectStandardTitle}</h2>
+      <p>{ui.selectStandardPrompt}</p>
 
       <div class="grid">
         {#each standardOptions as option}
           <button class="standard-btn" onclick={() => selectStandard(option.value)}>
-            <h3>{option.label}</h3>
+            <h3>{resolveLocalizedValue(option.label, locale)}</h3>
           </button>
         {/each}
       </div>
@@ -148,8 +160,8 @@
   {:else if !isCompleted}
     <section class="card">
       <div class="header-row">
-        <span>Standard: <strong>{selectedStandardLabel}</strong></span>
-        <span>Frage {Math.min(currentQuestionIndex + 1, allQuestions.length)} von {allQuestions.length}</span>
+        <span>{ui.standardLabel}: <strong>{selectedStandardLabel}</strong></span>
+        <span>{ui.questionLabel} {Math.min(currentQuestionIndex + 1, allQuestions.length)} {ui.ofLabel} {allQuestions.length}</span>
       </div>
 
       <div class="progress-bar">
@@ -159,45 +171,45 @@
         ></div>
       </div>
 
-      <h2>{currentQuestion?.text}</h2>
+      <h2>{resolveLocalizedValue(currentQuestion?.text, locale)}</h2>
 
       <div class="options">
         {#each currentQuestion?.options ?? [] as option}
           <button class="option-btn" onclick={() => handleAnswer(option.value)}>
-            {option.label}
+            {resolveLocalizedValue(option.label, locale)}
           </button>
         {/each}
       </div>
 
-      <button class="back-link" onclick={reset}>← Standard wechseln</button>
+      <button class="back-link" onclick={reset}>{ui.changeStandard}</button>
     </section>
 
   {:else}
     <section class="card result">
-      <h2>Auswertung: {selectedStandardLabel}</h2>
+      <h2>{ui.evaluation}: {selectedStandardLabel}</h2>
 
       <div class="score-grid">
         <div class="score-box">
-          <span class="score-label">Compliance Score</span>
+          <span class="score-label">{ui.compliance}</span>
           <div class="score-badge">{calculateComplianceScore()}%</div>
         </div>
         <div class="score-box">
-          <span class="score-label">Unsicherheits Score</span>
+          <span class="score-label">{ui.uncertainty}</span>
           <div class="score-badge uncertainty">{calculateUncertaintyScore()}%</div>
         </div>
       </div>
 
       {#if calculateComplianceScore() >= 80}
-        <p class="status high"><strong>State of the Art:</strong> Deine OT-Security ist hervorragend aufgestellt!</p>
+        <p class="status high"><strong>{ui.stateOfTheArt}</strong> {ui.stateOfTheArtText}</p>
       {:else if calculateComplianceScore() >= 50}
-        <p class="status medium"><strong>Guter Anfang:</strong> Es gibt noch wichtige Lücken in der Sicherheitsarchitektur oder im operativen Management.</p>
+        <p class="status medium"><strong>{ui.goodStart}</strong> {ui.goodStartText}</p>
       {:else}
-        <p class="status low"><strong>Handlungsbedarf:</strong> Wesentliche Sicherheitsanforderungen sind nicht erfüllt.</p>
+        <p class="status low"><strong>{ui.actionNeeded}</strong> {ui.actionNeededText}</p>
       {/if}
 
-      <p class="privacy-note">🔒 Alle Eingaben wurden nur lokal in deinem Browser verarbeitet. Es werden keine Daten gespeichert.</p>
+      <p class="privacy-note">{ui.privacy}</p>
 
-      <button class="reset-btn" onclick={reset}>Erneuten Test starten</button>
+      <button class="reset-btn" onclick={reset}>{ui.restart}</button>
     </section>
   {/if}
 </main>
@@ -214,6 +226,22 @@
   .container {
     max-width: 700px;
     margin: 0 auto;
+  }
+
+  .lang-switch-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+
+  .lang-switch {
+    border: 1px solid #cbd5e1;
+    border-radius: 999px;
+    background: white;
+    padding: 6px 12px;
+    cursor: pointer;
+    color: #0f172a;
+    font-weight: 600;
   }
 
   h1 {
@@ -338,6 +366,31 @@
 
   .score-badge.uncertainty {
     color: #b45309;
+  }
+
+  .status {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border-left: 4px solid;
+  }
+
+  .status.high {
+    background: #ecfdf5;
+    border-color: #16a34a;
+    color: #166534;
+  }
+
+  .status.medium {
+    background: #fff7ed;
+    border-color: #f59e0b;
+    color: #9a5d00;
+  }
+
+  .status.low {
+    background: #fef2f2;
+    border-color: #ef4444;
+    color: #991b1b;
   }
 
   .privacy-note {

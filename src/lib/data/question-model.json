@@ -8,12 +8,18 @@
   "standardSelection": {
     "id": "selected_standard",
     "type": "single_choice",
-    "text": "Für welchen Standard möchten Sie den Check durchführen?",
+    "text": {
+      "en": "Which standard would you like to use for the assessment?",
+      "de": "Für welchen Standard möchten Sie den Check durchführen?"
+    },
     "required": true,
     "options": [
       {
         "value": "whitepaper_secure_control_and_telecom",
-        "label": "Whitepaper Anforderungen an sichere Steuerungs- und Telekommunikationssysteme"
+        "label": {
+          "en": "Whitepaper on secure control and telecommunication systems requirements",
+          "de": "Whitepaper Anforderungen an sichere Steuerungs- und Telekommunikationssysteme"
+        }
       }
     ]
   },
@@ -21,21 +27,27 @@
     {
       "id": "project_type",
       "type": "single_choice",
-      "text": "Ist die Anlage eine Bestandsanlage oder eine neue Anlage / Greenfield?",
+      "text": {
+        "en": "Is this an existing installation or a new installation / greenfield project?",
+        "de": "Ist die Anlage eine Bestandsanlage oder eine neue Anlage / Greenfield?"
+      },
       "required": true,
       "weight": 0,
       "relevance": {
         "always": true
       },
       "options": [
-        { "value": "existing", "label": "Bestandsanlage", "score": 0 },
-        { "value": "greenfield", "label": "Neue Anlage / Greenfield", "score": 0 }
+        { "value": "existing", "label": { "en": "Existing system", "de": "Bestandsanlage" }, "score": 0 },
+        { "value": "greenfield", "label": { "en": "New installation / Greenfield", "de": "Neue Anlage / Greenfield" }, "score": 0 }
       ]
     },
     {
       "id": "security_in_design",
       "type": "yes_no_unknown",
-      "text": "Wurde Security von Beginn an in das Design der Anlage integriert?",
+      "text": {
+        "en": "Was security incorporated into the design of the system from the start?",
+        "de": "Wurde Security von Beginn an in das Design der Anlage integriert?"
+      },
       "required": true,
       "weight": 5,
       "relevance": {
@@ -44,15 +56,18 @@
         "value": "greenfield"
       },
       "options": [
-        { "value": "yes", "label": "Ja", "score": 100 },
-        { "value": "no", "label": "Nein", "score": 0 },
-        { "value": "unknown", "label": "Ich weiß es nicht", "score": 0 }
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
       ]
     },
     {
       "id": "asset_inventory",
       "type": "yes_no_unknown",
-      "text": "Gibt es ein aktuelles und vollständiges Asset-Inventar der OT-Umgebung?",
+      "text": {
+        "en": "Is there an up-to-date and complete asset inventory for the OT environment?",
+        "de": "Gibt es ein aktuelles und vollständiges Asset-Inventar der OT-Umgebung?"
+      },
       "required": true,
       "weight": 5,
       "relevance": {
@@ -61,39 +76,45 @@
         "value": "existing"
       },
       "options": [
-        { "value": "yes", "label": "Ja", "score": 100 },
-        { "value": "no", "label": "Nein", "score": 0 },
-        { "value": "unknown", "label": "Ich weiß es nicht", "score": 0 }
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
       ]
     },
     {
       "id": "segmentation",
       "type": "yes_no_unknown",
-      "text": "Ist die Anlage nach dem Prinzip der Netzwerksegmentierung und Sicherheitszonen aufgebaut?",
+      "text": {
+        "en": "Is the system structured according to network segmentation and security zones?",
+        "de": "Ist die Anlage nach dem Prinzip der Netzwerksegmentierung und Sicherheitszonen aufgebaut?"
+      },
       "required": true,
       "weight": 4,
       "relevance": {
         "always": true
       },
       "options": [
-        { "value": "yes", "label": "Ja", "score": 100 },
-        { "value": "no", "label": "Nein", "score": 0 },
-        { "value": "unknown", "label": "Ich weiß es nicht", "score": 0 }
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
       ]
     },
     {
       "id": "remote_access_control",
       "type": "yes_no_unknown",
-      "text": "Werden Fernzugriffe kontrolliert, dokumentiert und nur mit geeigneten Sicherheitsmaßnahmen zugelassen?",
+      "text": {
+        "en": "Are remote access sessions controlled, documented, and allowed only with appropriate security measures?",
+        "de": "Werden Fernzugriffe kontrolliert, dokumentiert und nur mit geeigneten Sicherheitsmaßnahmen zugelassen?"
+      },
       "required": true,
       "weight": 3,
       "relevance": {
         "always": true
       },
       "options": [
-        { "value": "yes", "label": "Ja", "score": 100 },
-        { "value": "no", "label": "Nein", "score": 0 },
-        { "value": "unknown", "label": "Ich weiß es nicht", "score": 0 }
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
       ]
     }
   ]
