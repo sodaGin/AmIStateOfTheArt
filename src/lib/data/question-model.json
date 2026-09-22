@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "scoring": {
+    "yes": 100,
+    "no": 0,
+    "unknown": 50
+  },
+  "standardSelection": {
+    "id": "selected_standard",
+    "type": "single_choice",
+    "text": {
+      "en": "Which standard would you like to use for the assessment?",
+      "de": "Für welchen Standard möchten Sie den Check durchführen?"
+    },
+    "required": true,
+    "options": [
+      {
+        "value": "whitepaper_secure_control_and_telecom",
+        "label": {
+          "en": "Whitepaper on secure control and telecommunication systems requirements",
+          "de": "Whitepaper Anforderungen an sichere Steuerungs- und Telekommunikationssysteme"
+        }
+      }
+    ]
+  },
+  "questions": [
+    {
+      "id": "security_by_design",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Were potential attacks, unauthorized actions and their possible impacts on the system already considered during the conception and development of the system?",
+        "de": "Wurden bereits bei der Konzeption und Entwicklung des Systems potenzielle Angriffe, unberechtigte Handlungen und deren mögliche Auswirkungen auf das System berücksichtigt?"
+      },
+      "explanation": {
+        "en": "Security aspects should already be considered during architecture and development and not only added afterwards. This helps reduce vulnerabilities and possible impact of security incidents through suitable design decisions from the beginning.",
+        "de": "Sicherheitsaspekte sollen bereits bei der Architektur und Entwicklung berücksichtigt werden und nicht erst nachträglich ergänzt werden. Dadurch können Schwachstellen und die möglichen Auswirkungen von Sicherheitsvorfällen bereits durch geeignete Designentscheidungen reduziert werden."
+      },
+      "required": true,
+      "weight": 5,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "least_privilege_users",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Do users and user groups have only the permissions they need to perform their respective tasks?",
+        "de": "Besitzen Benutzer und Benutzergruppen ausschließlich die Berechtigungen, die sie für die Erfüllung ihrer jeweiligen Aufgaben benötigen?"
+      },
+      "explanation": {
+        "en": "The restriction of user rights to the necessary minimum reduces the impact of compromised user accounts and prevents users from accessing functions or data that are not required for their tasks.",
+        "de": "Die Beschränkung von Benutzerrechten auf das notwendige Maß reduziert die Auswirkungen kompromittierter Benutzerkonten und verhindert, dass Benutzer auf Funktionen oder Daten zugreifen können, die für ihre Aufgaben nicht erforderlich sind."
+      },
+      "required": true,
+      "weight": 5,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "least_privilege_applications",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Are applications, services and system components operated only with the system rights required for their respective function?",
+        "de": "Werden Anwendungen, Dienste und Systemkomponenten ausschließlich mit den für ihre jeweilige Funktion erforderlichen Systemrechten betrieben?"
+      },
+      "explanation": {
+        "en": "Applications and services should not be operated with unnecessarily broad rights, for example administrator or system privileges. This limits the potential impact of a compromised application or service.",
+        "de": "Anwendungen und Dienste sollen nicht mit unnötig weitreichenden Rechten, beispielsweise Administrator- oder Systemprivilegien, betrieben werden. Dadurch werden die möglichen Auswirkungen einer kompromittierten Anwendung oder eines kompromittierten Dienstes begrenzt."
+      },
+      "required": true,
+      "weight": 5,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "defence_in_depth",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Are security-relevant functions protected by several layered and complementary protective measures?",
+        "de": "Sind sicherheitsrelevante Funktionen durch mehrere gestaffelte und sich ergänzende Schutzmaßnahmen abgesichert?"
+      },
+      "explanation": {
+        "en": "Security risks should not be limited by a single protective measure alone. Multiple layered safeguards ensure that if one control has a weakness or fails, additional protection mechanisms remain effective.",
+        "de": "Sicherheitsrisiken sollen nicht ausschließlich durch eine einzelne Schutzmaßnahme begrenzt werden. Mehrere aufeinander aufbauende Schutzmaßnahmen stellen sicher, dass bei einer Schwachstelle oder dem Ausfall einer einzelnen Maßnahme weitere Schutzmechanismen wirksam bleiben."
+      },
+      "required": true,
+      "weight": 5,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "independence_of_controls",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Do additional protective measures remain effective if one security measure fails or is bypassed?",
+        "de": "Bleiben weitere Schutzmaßnahmen wirksam, wenn eine einzelne Sicherheitsmaßnahme ausfällt oder umgangen wird?"
+      },
+      "explanation": {
+        "en": "A security measure should not be the only protection against a relevant risk. Independent or complementary controls limit the impact of a single failure or bypass.",
+        "de": "Eine Schutzmaßnahme sollte nicht den einzigen Schutz gegen ein relevantes Risiko darstellen. Durch voneinander unabhängige bzw. sich ergänzende Schutzmaßnahmen kann die Auswirkung des Ausfalls oder der Umgehung einer einzelnen Maßnahme begrenzt werden."
+      },
+      "required": true,
+      "weight": 5,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "redundancy_and_resilience",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Are security-relevant functions still effective if a single system component or security function fails?",
+        "de": "Bleiben sicherheitsrelevante Funktionen auch beim Ausfall einer einzelnen Systemkomponente oder Sicherheitsfunktion wirksam?"
+      },
+      "explanation": {
+        "en": "The failure of a single component or protective function should not lead to a complete loss of security-relevant protection. Redundancy can be implemented by technical redundancy or alternative independent protection mechanisms.",
+        "de": "Der Ausfall einer einzelnen Komponente oder Sicherheitsfunktion soll nicht zu einem vollständigen Verlust der sicherheitsrelevanten Schutzwirkung führen. Das Redundanzprinzip kann dabei sowohl durch technische Redundanz als auch durch alternative bzw. logisch unabhängige Schutzmechanismen umgesetzt werden."
+      },
+      "required": true,
+      "weight": 5,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "resource_exhaustion_protection",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Are critical system components and communication paths protected against excessive consumption of resources such as memory, CPU capacity or network bandwidth?",
+        "de": "Sind kritische Systemkomponenten und Kommunikationswege gegen eine übermäßige Beanspruchung von Ressourcen wie Arbeitsspeicher, Prozessorleistung oder Netzwerkbandbreite geschützt?"
+      },
+      "explanation": {
+        "en": "A targeted or unintended overload of system resources can make security-relevant functions unavailable. Suitable limits and protection mechanisms reduce the impact of resource consumption or DoS attacks.",
+        "de": "Eine gezielte oder unbeabsichtigte Überlastung von Systemressourcen kann dazu führen, dass sicherheitsrelevante Funktionen nicht mehr verfügbar sind. Geeignete Begrenzungen und Schutzmechanismen reduzieren die Auswirkungen von Resource-Consumption- bzw. DoS-Angriffen."
+      },
+      "required": true,
+      "weight": 4,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "disable_unneeded_services",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Are unnecessary services, functions, protocols and interfaces deactivated or removed?",
+        "de": "Sind nicht benötigte Dienste, Funktionen, Protokolle und Schnittstellen deaktiviert oder entfernt?"
+      },
+      "explanation": {
+        "en": "Unnecessary functions and interfaces increase the attack surface of the system and can create additional attack paths. Deactivating or removing them reduces the attack surface.",
+        "de": "Nicht benötigte Funktionen und Schnittstellen vergrößern die Angriffsfläche des Systems und können zusätzliche Angriffswege eröffnen. Durch deren Deaktivierung oder Entfernung wird die Angriffsfläche reduziert."
+      },
+      "required": true,
+      "weight": 3,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "input_validation",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Are data and inputs at relevant interfaces and when transferred between security-relevant system components checked for validity and plausibility?",
+        "de": "Werden Daten und Eingaben an relevanten Schnittstellen sowie bei der Übergabe zwischen sicherheitsrelevanten Systemkomponenten auf Zulässigkeit und Plausibilität geprüft?"
+      },
+      "explanation": {
+        "en": "Manipulated or erroneous data can spread within a system and influence security-relevant functions. Validation at relevant transfer points prevents invalid inputs from being processed unchecked.",
+        "de": "Manipulierte oder fehlerhafte Daten können sich innerhalb eines Systems weiterverbreiten und sicherheitsrelevante Funktionen beeinflussen. Eine Validierung an relevanten Übergabepunkten verhindert, dass unzulässige Eingaben ungeprüft verarbeitet werden."
+      },
+      "required": true,
+      "weight": 4,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "communication_restriction",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Is communication between system components restricted and checked for permissible communication partners, connections and messages or telegram types?",
+        "de": "Wird die Kommunikation zwischen Systemkomponenten auf zulässige Kommunikationspartner, Verbindungen und Nachrichten bzw. Telegrammtypen beschränkt und geprüft?"
+      },
+      "explanation": {
+        "en": "Communication interfaces should only allow the intended connections and communication content. This helps detect or prevent unauthorized communication relationships and manipulated or unexpected messages.",
+        "de": "Kommunikationsschnittstellen sollen nur die vorgesehenen Verbindungen und Kommunikationsinhalte zulassen. Dadurch können unzulässige Kommunikationsbeziehungen und manipulierte oder unerwartete Nachrichten erkannt bzw. verhindert werden."
+      },
+      "required": true,
+      "weight": 4,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "runtime_monitoring",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Are mechanisms for detecting and handling runtime errors and unexpected states available for critical system components?",
+        "de": "Sind für kritische Systemkomponenten Mechanismen zur Erkennung und Behandlung von Laufzeitfehlern und unerwarteten Zuständen vorhanden?"
+      },
+      "explanation": {
+        "en": "Mechanisms such as watchdogs or appropriate exception handling can help prevent failures in individual components from causing a complete loss of security-relevant functions and can help detect and control unexpected states.",
+        "de": "Mechanismen wie Watchdogs oder geeignetes Exception Handling können dazu beitragen, dass Fehler einzelner Komponenten nicht zu einem vollständigen Ausfall sicherheitsrelevanter Funktionen führen und unerwartete Zustände erkannt und kontrolliert behandelt werden."
+      },
+      "required": true,
+      "weight": 3,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    },
+    {
+      "id": "security_in_documentation",
+      "type": "yes_no_unknown",
+      "text": {
+        "en": "Is the implementation of the security-relevant design principles described in a traceable way in the system documentation?",
+        "de": "Ist die Umsetzung der sicherheitsrelevanten Designprinzipien in der Systemdokumentation nachvollziehbar beschrieben?"
+      },
+      "explanation": {
+        "en": "The documentation makes it understandable how the security architecture was implemented. It supports review, maintenance and safe further development of the system and prevents security-relevant design decisions from relying solely on implicit knowledge.",
+        "de": "Die Dokumentation macht nachvollziehbar, wie die Sicherheitsarchitektur umgesetzt wurde. Sie unterstützt die Überprüfung, Wartung und sichere Weiterentwicklung des Systems und verhindert, dass sicherheitsrelevante Designentscheidungen ausschließlich auf implizitem Wissen beruhen."
+      },
+      "required": true,
+      "weight": 3,
+      "relevance": {
+        "always": true
+      },
+      "options": [
+        { "value": "yes", "label": { "en": "Yes", "de": "Ja" }, "score": 100 },
+        { "value": "no", "label": { "en": "No", "de": "Nein" }, "score": 0 },
+        { "value": "unknown", "label": { "en": "I don't know", "de": "Ich weiß es nicht" }, "score": 0 }
+      ]
+    }
+  ]
+}

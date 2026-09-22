@@ -1,0 +1,21 @@
+export default {
+  heading: 'OT Cybersecurity Readiness Checker',
+  selectStandardTitle: '1. Standard auswählen',
+  selectStandardPrompt: 'Wähle den Standard aus, gegen den du deine OT-Sicherheit prüfen möchtest:',
+  standardLabel: 'Standard',
+  questionLabel: 'Frage',
+  ofLabel: 'von',
+  changeStandard: '← Standard wechseln',
+  evaluation: 'Auswertung',
+  compliance: 'Compliance Score',
+  uncertainty: 'Unsicherheits Score',
+  stateOfTheArt: 'State of the Art:',
+  stateOfTheArtText: 'Deine OT-Security ist hervorragend aufgestellt!',
+  goodStart: 'Guter Anfang:',
+  goodStartText: 'Es gibt noch wichtige Lücken in der Sicherheitsarchitektur oder im operativen Management.',
+  actionNeeded: 'Handlungsbedarf:',
+  actionNeededText: 'Wesentliche Sicherheitsanforderungen sind nicht erfüllt.',
+  privacy: 'Alle Eingaben wurden nur lokal in deinem Browser verarbeitet. Es werden keine Daten gespeichert.',
+  restart: 'Erneuten Test starten',
+  switchLanguage: 'EN'
+};
